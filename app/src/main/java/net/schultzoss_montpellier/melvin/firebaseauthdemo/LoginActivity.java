@@ -17,12 +17,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private Button buttonRegister;
+    private Button buttonSignin;
     private EditText editTextEmail;
     private EditText editTextPassword;
-    private TextView textViewSignin;
+    private TextView textViewSignup;
 
     private ProgressDialog progressDialog;
 
@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_login);
 
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -43,16 +43,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         progressDialog = new ProgressDialog(this);
 
-        buttonRegister = (Button)findViewById(R.id.buttonRegister);
         editTextEmail = (EditText)findViewById(R.id.editTextEmail);
         editTextPassword = (EditText)findViewById(R.id.editTextPassword);
-        textViewSignin = (TextView)findViewById(R.id.textViewSignin);
+        buttonSignin = (Button)findViewById(R.id.buttonSignin);
+        textViewSignup = (TextView)findViewById(R.id.textViewSignup);
 
-        buttonRegister.setOnClickListener(this);
-        textViewSignin.setOnClickListener(this);
+        buttonSignin.setOnClickListener(this);
+        textViewSignup.setOnClickListener(this);
     }
 
-    private void registerUser() {
+    private void userLogin() {
         String email = editTextEmail.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
 
@@ -72,24 +72,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // if validations are ok
         // we will first show a progressDialog
-        progressDialog.setMessage("Registering User...");
+        progressDialog.setMessage("Logging User...");
         progressDialog.show();
 
-        // create a new user
-        firebaseAuth.createUserWithEmailAndPassword(email, password)
+        firebaseAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // user is successfully registered and logged in
-                            // we will start the profile activity here
+                            // start the profile activity here
                             finish();
                             startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
-
-                            // right now lets display a toast only
-                            Toast.makeText(MainActivity.this, "Registered Successfully", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(MainActivity.this, "Could not registered, please try again", Toast.LENGTH_SHORT).show();
                         }
                         progressDialog.dismiss(); // dismiss the progress bar
                     }
@@ -98,14 +91,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        if (view == buttonRegister) {
-            registerUser();
+        if (view == buttonSignin) {
+            userLogin();
         }
 
-        if (view == textViewSignin) {
-            // will open login activity here
+        if (view == textViewSignup) {
             finish();
-            startActivity(new Intent(this, LoginActivity.class));
+            startActivity(new Intent(this, MainActivity.class));
         }
     }
 }
